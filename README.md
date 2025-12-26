@@ -24,4 +24,20 @@ npx shadcn@latest init
 ```bash 
 npx shadcn@latest add sonner button input select dialog badge card
 ```
-### 4. 
+---
+
+### 4. Axios
+```bash
+npm install axios
+```
+---
+
+### 5. Json Server
+```bash
+npm install json-server --save-dev
+```
+**How to run the mock server**
+```bash
+npm run mock:server
+```
+---
