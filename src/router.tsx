@@ -53,14 +53,18 @@ import MaintenanceRequests from "./pages/tenant/MaintenanceRequests";
 import Payments from "./pages/tenant/Payments";
 import Documents from "./pages/tenant/Documents";
 
+import AppShell from "./components/layout/AppShell";
+
 const Router = () => {
   return (
     <Routes>
     {/* Public */}
-    <Route path="/" element={<Landing />} />
-    <Route path="/demo" element={<DemoWalkthrough />} />
-    <Route path="/contact" element={<Contact />} />
-    <Route path="/terms-and-conditions" element={<TermsandConditions />} />
+    <Route element={<AppShell showFooter />}>
+      <Route path="/" element={<Landing />} />
+      <Route path="/demo" element={<DemoWalkthrough />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/terms-and-conditions" element={<TermsandConditions />} />
+    </Route>
 
     {/* Auth */}
     <Route path="/login" element={<Login />} />
