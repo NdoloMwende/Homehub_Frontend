@@ -66,6 +66,10 @@ const LandlordDashboard = () => {
       value={`${occupiedUnits} / ${totalUnits}`}
     />
     <MetricCard
+      label="Vacant Units"
+      value={`${vacantUnits} / ${totalUnits}`}
+    />
+    <MetricCard
       label="Rent Collected"
       value={`KES ${totalPaid.toLocaleString()}`}
     />
