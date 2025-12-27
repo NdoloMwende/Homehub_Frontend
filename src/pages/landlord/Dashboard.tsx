@@ -34,16 +34,20 @@ const LandlordDashboard = () => {
   const occupiedUnits = units.filter(u => u.status === "occupied").length;
   const vacantUnits = totalUnits - occupiedUnits;
 
-  const totalInvoiced = invoices.reduce(
-    (sum, inv) => sum + inv.invoice_amount,
-    0
-  );
+const paidInvoices = invoices.filter(inv => inv.status === "paid");
+const overdueInvoices = invoices.filter(inv => inv.status === "overdue");
+const pendingInvoices = invoices.filter(inv => inv.status === "pending");
 
-  const totalPaid = invoices
-    .filter(inv => inv.status === "paid")
-    .reduce((sum, inv) => sum + inv.invoice_amount, 0);
+const totalCollected = paidInvoices.reduce(
+  (sum, inv) => sum + inv.invoice_amount,
+  0
+);
 
-  const outstandingRent = totalInvoiced - totalPaid;
+const totalOverdue = overdueInvoices.reduce(
+  (sum, inv) => sum + inv.invoice_amount,
+  0
+);
+
 
   const openMaintenance = maintenance.filter(
     m => m.status !== "completed"
@@ -71,11 +75,15 @@ const LandlordDashboard = () => {
     />
     <MetricCard
       label="Rent Collected"
-      value={`KES ${totalPaid.toLocaleString()}`}
+      value={`KES ${totalCollected.toLocaleString()}`}
     />
     <MetricCard
       label="Outstanding Rent"
-      value={`KES ${outstandingRent.toLocaleString()}`}
+      value={`KES ${totalOverdue.toLocaleString()}`}
+    />
+    <MetricCard
+      label="Pending Invoices"
+      value={pendingInvoices.length}
     />
     <MetricCard
       label="Open Maintenance"
