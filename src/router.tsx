@@ -38,6 +38,9 @@ import MaintenanceRequests from "./pages/tenant/MaintenanceRequests";
 import Payments from "./pages/tenant/Payments";
 import Documents from "./pages/tenant/Documents";
 
+/* Notifications */
+import Notifications from "./pages/shared/Notifications";
+
 const Router = () => {
   return (
     <Routes>
@@ -99,6 +102,17 @@ const Router = () => {
         <Route path="/tenant/maintenance" element={<MaintenanceRequests />} />
         <Route path="/tenant/payments" element={<Payments />} />
         <Route path="/tenant/documents" element={<Documents />} />
+      </Route>
+
+      {/* ================= SHARED ================= */}
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["admin", "landlord", "tenant"]}>
+            <AppShell />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/notifications" element={<Notifications />} />
       </Route>
     </Routes>
   );
