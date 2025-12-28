@@ -5,7 +5,7 @@ export interface MaintenanceRequest {
   title: string;
   description: string;
   image_url?: string;
-  status: "pending" | "in_progress" | "completed";
+  status: "pending" | "in-progress" | "completed";
   created_at: string;
   updated_at: string;
 }

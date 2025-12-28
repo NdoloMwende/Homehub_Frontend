@@ -16,3 +16,20 @@ export const createMaintenanceRequest = async (
   const res = await api.post("/maintenance_requests", payload);
   return res.data;
 };
+
+export const getMaintenanceByLandlord = async (landlordId: number) => {
+  const res = await api.get<MaintenanceRequest[]>(
+    `/maintenance_requests?landlord_id=${landlordId}`
+  );
+  return res.data;
+};
+
+export const updateMaintenanceStatus = async (
+  id: number,
+  status: "pending" | "in-progress" | "completed"
+) => {
+  const res = await api.patch(`/maintenance_requests/${id}`, {
+    status
+  });
+  return res.data;
+};
