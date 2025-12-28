@@ -1,17 +1,19 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { loginUser } from "@/services/auth.service";
 
 export type UserRole = "admin" | "landlord" | "tenant";
 
 export interface AuthUser {
-  id: string;
+  id: number;
   email: string;
+  full_name: string;
   role: UserRole;
-  approved?: boolean; // for landlords
+  approved?: boolean;
 }
 
 interface AuthContextType {
   user: AuthUser | null;
-  login: (user: AuthUser) => void;
+  login: (email: string, password: string) => Promise<AuthUser>;
   logout: () => void;
 }
 
@@ -20,8 +22,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
 
-  const login = (userData: AuthUser) => {
+  const login = async (email: string, password: string): Promise<AuthUser> => {
+    const userData = await loginUser(email, password);
     setUser(userData);
+    return userData;
   };
 
   const logout = () => {
@@ -36,9 +40,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used within AuthProvider");
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return ctx;
+  return context;
 };

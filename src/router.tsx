@@ -38,13 +38,13 @@ import MaintenanceRequests from "./pages/tenant/MaintenanceRequests";
 import Payments from "./pages/tenant/Payments";
 import Documents from "./pages/tenant/Documents";
 
-/* Notifications */
+/* Shared */
 import Notifications from "./pages/shared/Notifications";
 
 const Router = () => {
   return (
     <Routes>
-      {/* ================= PUBLIC ================= */}
+      {/* ============== PUBLIC ============== */}
       <Route element={<AppShell showFooter />}>
         <Route path="/" element={<Landing />} />
         <Route path="/demo" element={<DemoWalkthrough />} />
@@ -52,67 +52,50 @@ const Router = () => {
         <Route path="/terms-and-conditions" element={<TermsandConditions />} />
       </Route>
 
-      {/* ================= AUTH ================= */}
+      {/* ============== AUTH ============== */}
       <Route path="/login" element={<Login />} />
       <Route path="/register/landlord" element={<RegisterLandlord />} />
       <Route path="/register/tenant" element={<RegisterTenant />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
 
-      {/* ================= ADMIN ================= */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <AppShell />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/landlords" element={<LandlordApprovals />} />
-        <Route path="/admin/properties" element={<PropertyVerification />} />
-        <Route path="/admin/reports" element={<Reports />} />
-      </Route>
+      {/* ============== PROTECTED LAYOUT ============== */}
+      <Route element={<AppShell />}>
+        {/* ADMIN */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/landlords" element={<LandlordApprovals />} />
+          <Route path="/admin/properties" element={<PropertyVerification />} />
+          <Route path="/admin/reports" element={<Reports />} />
+        </Route>
 
-      {/* ================= LANDLORD ================= */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <AppShell />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/landlord/dashboard" element={<LandlordDashboard />} />
-        <Route path="/landlord/properties" element={<MyProperties />} />
-        <Route path="/landlord/properties/new" element={<AddProperty />} />
-        <Route path="/landlord/properties/:id" element={<PropertyDetails />} />
-        <Route path="/landlord/documents" element={<UploadDocuments />} />
-        <Route path="/landlord/maintenance" element={<MaintenanceInbox />} />
-        <Route path="/landlord/analytics" element={<Analytics />} />
-      </Route>
+        {/* LANDLORD */}
+        <Route element={<ProtectedRoute allowedRoles={["landlord"]} />}>
+          <Route path="/landlord/dashboard" element={<LandlordDashboard />} />
+          <Route path="/landlord/properties" element={<MyProperties />} />
+          <Route path="/landlord/properties/new" element={<AddProperty />} />
+          <Route path="/landlord/properties/:id" element={<PropertyDetails />} />
+          <Route path="/landlord/documents" element={<UploadDocuments />} />
+          <Route path="/landlord/maintenance" element={<MaintenanceInbox />} />
+          <Route path="/landlord/analytics" element={<Analytics />} />
+        </Route>
 
-      {/* ================= TENANT ================= */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["tenant"]}>
-            <AppShell />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/tenant/dashboard" element={<TenantDashboard />} />
-        <Route path="/tenant/premises" element={<MyPremises />} />
-        <Route path="/tenant/maintenance" element={<MaintenanceRequests />} />
-        <Route path="/tenant/payments" element={<Payments />} />
-        <Route path="/tenant/documents" element={<Documents />} />
-      </Route>
+        {/* TENANT */}
+        <Route element={<ProtectedRoute allowedRoles={["tenant"]} />}>
+          <Route path="/tenant/dashboard" element={<TenantDashboard />} />
+          <Route path="/tenant/premises" element={<MyPremises />} />
+          <Route path="/tenant/maintenance" element={<MaintenanceRequests />} />
+          <Route path="/tenant/payments" element={<Payments />} />
+          <Route path="/tenant/documents" element={<Documents />} />
+        </Route>
 
-      {/* ================= SHARED ================= */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={["admin", "landlord", "tenant"]}>
-            <AppShell />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/notifications" element={<Notifications />} />
+        {/* SHARED */}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["admin", "landlord", "tenant"]} />
+          }
+        >
+          <Route path="/notifications" element={<Notifications />} />
+        </Route>
       </Route>
     </Routes>
   );
