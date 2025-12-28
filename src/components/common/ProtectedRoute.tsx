@@ -39,7 +39,7 @@ const ProtectedRoute = ({ allowedRoles, children }: Props) => {
   // TEMP MOCK AUTH (DEV ONLY)
   const mockUser: { isAuthenticated: boolean; role: "admin" | "landlord" | "tenant" } = {
     isAuthenticated: true,
-    role: "tenant" // change to "admin" or "tenant" when testing
+    role: "admin" // change to "admin" or "tenant" when testing
   };
 
   if (!mockUser.isAuthenticated) {
