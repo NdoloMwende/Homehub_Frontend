@@ -45,3 +45,45 @@ export const rejectLandlord = async (id: number, comment: string) => {
     comment 
   });
 };
+
+// Property verification methods
+export interface PendingProperty {
+  id: number;
+  name: string;
+  landlord_id: number;
+  landlord_name: string;
+  evidence_of_ownership: string | null;
+  comment: string | null;
+}
+
+export const getPendingProperties = async (): Promise<PendingProperty[]> => {
+  const res = await api.get("/properties?status=pending");
+  const properties = res.data;
+
+  
+  const enriched = await Promise.all(
+    properties.map(async (prop: any) => {
+      const landlordRes = await api.get(`/users/${prop.landlord_id}`);
+      return {
+        ...prop,
+        landlord_name: landlordRes.data.full_name
+      };
+    })
+  );
+
+  return enriched;
+};
+
+export const approveProperty = async (id: number, comment?: string) => {
+  return api.patch(`/properties/${id}`, { 
+    status: "approved", 
+    comment: comment || null 
+  });
+};
+
+export const rejectProperty = async (id: number, comment: string) => {
+  return api.patch(`/properties/${id}`, { 
+    status: "rejected", 
+    comment 
+  });
+};
