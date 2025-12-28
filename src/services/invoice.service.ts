@@ -1,5 +1,5 @@
 import axios from "axios";
-import { type RentInvoice } from "../types/invoice";
+import { type RentInvoice } from "../types/rentinvoice";
 
 const API_URL = "http://localhost:3000";
 
