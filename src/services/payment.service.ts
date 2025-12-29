@@ -14,3 +14,10 @@ export const getTenantInvoices = async (
   const res = await api.get(`/rentinvoices?tenant_id=${tenantId}`);
   return res.data;
 };
+
+export const getInvoiceById = async (
+  invoiceId: number
+): Promise<RentInvoice> => {
+  const res = await api.get(`/rentinvoices/${invoiceId}`);
+  return res.data;
+};

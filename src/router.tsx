@@ -37,6 +37,8 @@ import MyPremises from "./pages/tenant/MyPremises";
 import MaintenanceRequests from "./pages/tenant/MaintenanceRequests";
 import Payments from "./pages/tenant/Payments";
 import Documents from "./pages/tenant/Documents";
+import PaymentDetails from "./pages/tenant/PaymentDetails";
+
 
 /* Shared */
 import Notifications from "./pages/shared/Notifications";
@@ -86,6 +88,8 @@ const Router = () => {
           <Route path="/tenant/maintenance" element={<MaintenanceRequests />} />
           <Route path="/tenant/payments" element={<Payments />} />
           <Route path="/tenant/documents" element={<Documents />} />
+          <Route path="/tenant/payments/:invoiceId" element={<PaymentDetails />} />
+
         </Route>
 
         {/* SHARED */}

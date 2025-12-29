@@ -3,17 +3,23 @@ import { getTenantInvoices } from "@/services/payment.service";
 import {type RentInvoice } from "@/types/rentinvoice";
 import MetricCard from "@/components/common/MetricCard";
 import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 const TenantPayments = () => {
   const { user } = useAuth();
+   const navigate = useNavigate();
+
   const tenantId = user?.id;
 
   const [invoices, setInvoices] = useState<RentInvoice[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  if (!tenantId) return;
+  if (!tenantId) {
+    setLoading(false);
+    return;
+  }
 
   const fetchInvoices = async () => {
     try {
@@ -29,8 +35,11 @@ const TenantPayments = () => {
   fetchInvoices();
 }, [tenantId]);
 
+  if (!user) {
+    return <p>Please log in to view your payments.</p>;
+  }
 
-  if (loading) return <p>Loading payments...</p>;
+  if (loading){ return <p>Loading payments...</p>;}
 
   const totalInvoiced = invoices.reduce(
     (sum, inv) => sum + inv.invoice_amount,
@@ -42,6 +51,7 @@ const TenantPayments = () => {
     .reduce((sum, inv) => sum + inv.invoice_amount, 0);
 
   const outstanding = totalInvoiced - totalPaid;
+ 
 
   return (
     <div className="p-6 space-y-6">
@@ -73,9 +83,11 @@ const TenantPayments = () => {
           <ul className="space-y-2">
             {invoices.map(inv => (
               <li
-                key={inv.id}
-                className="border rounded p-3 flex justify-between"
-              >
+  key={inv.id}
+  onClick={() => navigate(`/tenant/payments/${inv.id}`)}
+  className="border rounded p-3 flex justify-between cursor-pointer hover:bg-muted"
+>
+
                 <div>
                   <p>Invoice #{inv.id}</p>
                   <p className="text-sm text-gray-500">

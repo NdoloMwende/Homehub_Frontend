@@ -8,7 +8,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
-  const { user } = useAuth();
+  const { user,loading } = useAuth();
+
+  if (loading) {
+    return <div>Checking Access...</div>;
+  }
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -17,7 +21,6 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   if (!allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
-
   // landlord approval check
   if (user.role === "landlord" && user.approved === false) {
     return <Navigate to="/verify-email" replace />;
