@@ -2,27 +2,33 @@ import { useEffect, useState } from "react";
 import { getTenantInvoices } from "@/services/payment.service";
 import {type RentInvoice } from "@/types/rentinvoice";
 import MetricCard from "@/components/common/MetricCard";
+import { useAuth } from "@/context/AuthContext";
 
-const TENANT_ID = 3;
 
 const TenantPayments = () => {
+  const { user } = useAuth();
+  const tenantId = user?.id;
+
   const [invoices, setInvoices] = useState<RentInvoice[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const data = await getTenantInvoices(TENANT_ID);
-        setInvoices(data);
-      } catch (err) {
-        console.error("Failed to load invoices", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (!tenantId) return;
 
-    fetchInvoices();
-  }, []);
+  const fetchInvoices = async () => {
+    try {
+      const data = await getTenantInvoices(tenantId);
+      setInvoices(data);
+    } catch (err) {
+      console.error("Failed to load invoices", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchInvoices();
+}, [tenantId]);
+
 
   if (loading) return <p>Loading payments...</p>;
 
