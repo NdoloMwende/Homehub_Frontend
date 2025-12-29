@@ -88,7 +88,7 @@ const Router = () => {
           <Route path="/tenant/maintenance" element={<MaintenanceRequests />} />
           <Route path="/tenant/payments" element={<Payments />} />
           <Route path="/tenant/documents" element={<Documents />} />
-          <Route path="/tenant/payments/:invoiceId" element={<PaymentDetails />} />
+          <Route path="/tenant/payments/:id" element={<PaymentDetails />} />
 
         </Route>
 

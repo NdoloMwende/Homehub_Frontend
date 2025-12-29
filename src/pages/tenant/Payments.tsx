@@ -4,6 +4,7 @@ import {type RentInvoice } from "@/types/rentinvoice";
 import MetricCard from "@/components/common/MetricCard";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import StatusBadge from "@/components/common/StatusBadge";
 
 
 const TenantPayments = () => {
@@ -91,13 +92,13 @@ const TenantPayments = () => {
                 <div>
                   <p>Invoice #{inv.id}</p>
                   <p className="text-sm text-gray-500">
-                    Due: {inv.invoice_date}
+                    Due: {new Date(inv.invoice_date).toLocaleDateString()}
                   </p>
                 </div>
 
                 <div className="text-right">
                   <p>KES {inv.invoice_amount.toLocaleString()}</p>
-                  <p className="text-sm capitalize">{inv.status}</p>
+                  <StatusBadge status={inv.status} />
                 </div>
               </li>
             ))}
