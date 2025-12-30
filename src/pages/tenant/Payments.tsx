@@ -1,6 +1,6 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getTenantInvoices } from "@/services/payment.service";
-import {type RentInvoice } from "@/types/rentinvoice";
+import { type RentInvoice } from "@/types/rentinvoice";
 import MetricCard from "@/components/common/MetricCard";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -11,14 +11,13 @@ import ErrorMessage from "@/components/common/ErrorMessage";
 
 const TenantPayments = () => {
   const { user } = useAuth();
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const tenantId = user?.id;
 
   const [invoices, setInvoices] = useState<RentInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
 
   const fetchInvoices = async () => {
     if (!tenantId) {
@@ -32,21 +31,27 @@ const TenantPayments = () => {
       setError(null);
     } catch (err) {
       console.error("Failed to load invoices", err);
-      setError("Failed to load payments. Please try again later.");
+      setError("Failed to load payments. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
 
-  fetchInvoices();
-}, [tenantId]);
+  useEffect(() => {
+    fetchInvoices();
+  }, [tenantId]);
 
   if (!user) {
     return <p>Please log in to view your payments.</p>;
   }
 
-  if (loading){ return <LoadingSpinner message="Loading your payments..."/>;}
+  if (loading) {
+    return <LoadingSpinner message="Loading your payments..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchInvoices} />;
+  }
 
   const totalInvoiced = invoices.reduce(
     (sum, inv) => sum + inv.invoice_amount,
@@ -58,7 +63,6 @@ const TenantPayments = () => {
     .reduce((sum, inv) => sum + inv.invoice_amount, 0);
 
   const outstanding = totalInvoiced - totalPaid;
- 
 
   return (
     <div className="p-6 space-y-6">
@@ -86,18 +90,17 @@ const TenantPayments = () => {
 
         {invoices.length === 0 ? (
           <EmptyState
-            title="No invoices yet"
-            description="Invoices will appear here once they are generated."
-            />
-          ) : (
+            title="No payments yet"
+            description="Invoices will appear here once generated for your lease."
+          />
+        ) : (
           <ul className="space-y-2">
             {invoices.map(inv => (
               <li
-  key={inv.id}
-  onClick={() => navigate(`/tenant/payments/${inv.id}`)}
-  className="border rounded p-3 flex justify-between cursor-pointer hover:bg-muted"
->
-
+                key={inv.id}
+                onClick={() => navigate(`/tenant/payments/${inv.id}`)}
+                className="border rounded p-3 flex justify-between cursor-pointer hover:bg-muted"
+              >
                 <div>
                   <p>Invoice #{inv.id}</p>
                   <p className="text-sm text-gray-500">
