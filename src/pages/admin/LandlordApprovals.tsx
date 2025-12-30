@@ -5,6 +5,8 @@ import {
   rejectLandlord
 } from "@/services/admin.service";
 import { type PendingLandlord } from "@/services/admin.service";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import EmptyState from "@/components/common/EmptyState";
 
 const LandlordApprovals = () => {
   const [landlords, setLandlords] = useState<PendingLandlord[]>([]);
@@ -41,14 +43,19 @@ const LandlordApprovals = () => {
     setRejectionComment("");
   };
 
-  if (loading) return <p>Loading pending landlords...</p>;
+ if (loading) {
+    return <LoadingSpinner message="Loading pending landlords..." />;
+  }
 
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">Landlord Approvals</h1>
 
       {landlords.length === 0 ? (
-        <p>No pending landlord verifications.</p>
+        <EmptyState
+          title="No pending landlord approvals"
+          description="New landlord registrations will appear here for review."
+        />
       ) : (
         <ul className="space-y-4">
           {landlords.map(landlord => (

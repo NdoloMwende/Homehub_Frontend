@@ -3,22 +3,33 @@ import api from "../../services/api";
 import MetricCard from "@/components/common/MetricCard";
 import { getTenantMaintenanceRequests } from "@/services/maintenance.service";
 import { getActiveLeaseForTenant } from "@/services/lease.service";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import EmptyState from "@/components/common/EmptyState";
+import { useAuth } from "@/context/AuthContext";
 
-const TENANT_ID = 3; // mock logged-in tenant
+// const TENANT_ID = 3; // mock logged-in tenant
 
 const TenantDashboard = () => {
+  const {user} = useAuth();
+  const tenantId = user?.id;
+
   const [invoices, setInvoices] = useState<any[]>([]);
   const [maintenance, setMaintenance] = useState<any[]>([]);
   const [lease, setLease] = useState<any | null>(null);
   const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
+    if (!tenantId) {
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const [invoiceRes, maintRes, leaseRes] = await Promise.all([
-          api.get(`/rentinvoices?tenant_id=${TENANT_ID}`),
-          getTenantMaintenanceRequests(TENANT_ID),
-          getActiveLeaseForTenant(TENANT_ID),
+          api.get(`/rentinvoices?tenant_id=${tenantId}`),
+          getTenantMaintenanceRequests(tenantId),
+          getActiveLeaseForTenant(tenantId),
         ]);
 
         setInvoices(invoiceRes.data);
@@ -27,12 +38,11 @@ const TenantDashboard = () => {
       } catch (err) {
         console.error("Failed to load tenant dashboard data", err);
       } finally {
-        setLoading(false); // ensures loading ends even on error
+        setLoading(false);
       }
     };
-
-    fetchData();
-  }, []);
+      fetchData();
+  }, [tenantId]);
 
   // Invoice calculations
   const totalInvoiced = invoices.reduce(
@@ -66,8 +76,21 @@ const TenantDashboard = () => {
       })
     : "No active lease";
 
+  if (!user) {
+    return <p>Please log in to view your dashboard.</p>;
+  }
+
   if (loading) {
-    return <p className="p-6">Loading dashboard...</p>;
+    return <LoadingSpinner message="Loading dashboard..." />;
+  }
+
+  if (invoices.length === 0 && maintenance.length === 0 && !lease) {
+    return (
+      <EmptyState
+        title="Welcome to your dashboard"
+        description="Once you have invoices, maintenance requests, or an active lease, they will appear here."
+      />
+    );
   }
 
   return (

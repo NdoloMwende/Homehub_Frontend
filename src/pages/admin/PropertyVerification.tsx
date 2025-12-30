@@ -5,6 +5,8 @@ import {
   rejectProperty
 } from "@/services/admin.service";
 import {  type PendingProperty } from "@/services/admin.service";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import EmptyState from "@/components/common/EmptyState";
 
 const PropertyVerification = () => {
   const [properties, setProperties] = useState<PendingProperty[]>([]);
@@ -41,14 +43,18 @@ const PropertyVerification = () => {
     setRejectionComment("");
   };
 
-  if (loading) return <p>Loading pending properties...</p>;
-
+  if (loading) {
+    return <LoadingSpinner message="Loading pending properties..." />;
+  }
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">Property Verification</h1>
 
       {properties.length === 0 ? (
-        <p>No pending property verifications.</p>
+        <EmptyState
+          title="No pending property verifications"
+          description="New property listings will appear here for review."
+        />
       ) : (
         <ul className="space-y-4">
           {properties.map(prop => (

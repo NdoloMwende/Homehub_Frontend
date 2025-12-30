@@ -4,25 +4,31 @@ import {
   updateMaintenanceStatus
 } from "@/services/maintenance.service";
 import { type MaintenanceRequest } from "@/types/maintenance";
-
-const LANDLORD_ID = 2;
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import EmptyState from "@/components/common/EmptyState";
+import { useAuth } from "@/context/AuthContext";
 
 const MaintenanceInbox = () => {
+  const { user } = useAuth();
+  const landlordId = user?.id;
+
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
- const fetchRequests = async () => {
+  const fetchRequests = async () => {
+    if (!landlordId) return;
     try {
-      const data = await getMaintenanceByLandlord(LANDLORD_ID);
+      const data = await getMaintenanceByLandlord(landlordId);
       setRequests(data);
     } catch (err) {
       console.error("Failed to fetch requests", err);
     }
   };
+
   useEffect(() => {
     fetchRequests().finally(() => setLoading(false));
-  }, [refreshTrigger]);
+  }, [refreshTrigger, landlordId]);
 
   const handleStatusChange = async (
     id: number,
@@ -30,21 +36,29 @@ const MaintenanceInbox = () => {
   ) => {
     try {
       await updateMaintenanceStatus(id, status);
-      // Force refresh by changing trigger
       setRefreshTrigger(prev => prev + 1);
     } catch (err) {
       console.error("Failed to update status", err);
     }
   };
 
-  if (loading) return <p>Loading maintenance inbox...</p>;
+  if (!user) {
+    return <p>Please log in to view your maintenance inbox.</p>;
+  }
+
+  if (loading) {
+    return <LoadingSpinner message="Loading maintenance inbox..." />;
+  }
 
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">Maintenance Inbox</h1>
 
       {requests.length === 0 ? (
-        <p>No maintenance requests.</p>
+        <EmptyState
+          title="No maintenance requests"
+          description="Requests from your tenants will appear here when submitted."
+        />
       ) : (
         <ul className="space-y-4">
           {requests.map(req => (

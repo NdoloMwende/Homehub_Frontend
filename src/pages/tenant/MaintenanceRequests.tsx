@@ -4,36 +4,41 @@ import {
   createMaintenanceRequest
 } from "@/services/maintenance.service";
 import { type MaintenanceRequest } from "@/types/maintenance";
-
-const TENANT_ID = 3; // mock logged-in tenant
-const UNIT_ID = 1; // mock unit ID for the tenant
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import EmptyState from "@/components/common/EmptyState";
+import { useAuth } from "@/context/AuthContext";
 
 const MaintenanceRequests = () => {
+  const { user } = useAuth();
+  const tenantId = user?.id;
+  const unitId = 1; // Temporary — will be dynamic when units are assigned to tenants
+
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const fetchRequests = async () => {
-  const data = await getTenantMaintenanceRequests(TENANT_ID);
-  setRequests(data);
+    if (!tenantId) return;
+    const data = await getTenantMaintenanceRequests(tenantId);
+    setRequests(data);
   };
 
   useEffect(() => {
     fetchRequests().finally(() => setLoading(false));
-  }, []);
+  }, [tenantId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!title || !description) {
+
+    if (!title || !description || !tenantId) {
       alert("Please fill in all fields.");
       return;
     }
 
     await createMaintenanceRequest({
-      tenant_id: TENANT_ID,
-      unit_id: UNIT_ID,
+      tenant_id: tenantId,
+      unit_id: unitId,
       title,
       description,
       status: "pending"
@@ -44,7 +49,13 @@ const MaintenanceRequests = () => {
     fetchRequests();
   };
 
-  if (loading) return <p>Loading maintenance requests...</p>;
+  if (!user) {
+    return <p>Please log in to view maintenance requests.</p>;
+  }
+
+  if (loading) {
+    return <LoadingSpinner message="Loading maintenance requests..." />;
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -57,12 +68,14 @@ const MaintenanceRequests = () => {
           value={title}
           onChange={e => setTitle(e.target.value)}
           className="border p-2 w-full"
+          required
         />
         <textarea
           placeholder="Describe the issue"
           value={description}
           onChange={e => setDescription(e.target.value)}
           className="border p-2 w-full"
+          required
         />
         <button type="submit" className="border px-4 py-2">
           Submit Request
@@ -71,7 +84,10 @@ const MaintenanceRequests = () => {
 
       {/* List */}
       {requests.length === 0 ? (
-        <p>No maintenance requests found.</p>
+        <EmptyState
+          title="No maintenance requests"
+          description="Submit a request when you need assistance with your unit."
+        />
       ) : (
         <ul className="space-y-3">
           {requests.map(req => (

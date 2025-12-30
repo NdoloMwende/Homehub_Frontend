@@ -5,7 +5,8 @@ import MetricCard from "@/components/common/MetricCard";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "@/components/common/StatusBadge";
-
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import EmptyState from "@/components/common/EmptyState";
 
 const TenantPayments = () => {
   const { user } = useAuth();
@@ -40,7 +41,7 @@ const TenantPayments = () => {
     return <p>Please log in to view your payments.</p>;
   }
 
-  if (loading){ return <p>Loading payments...</p>;}
+  if (loading){ return <LoadingSpinner message="Loading your payments..."/>;}
 
   const totalInvoiced = invoices.reduce(
     (sum, inv) => sum + inv.invoice_amount,
@@ -79,8 +80,11 @@ const TenantPayments = () => {
         <h2 className="text-lg font-medium mb-2">Invoices</h2>
 
         {invoices.length === 0 ? (
-          <p>No invoices found</p>
-        ) : (
+          <EmptyState
+            title="No invoices yet"
+            description="Invoices will appear here once they are generated."
+            />
+          ) : (
           <ul className="space-y-2">
             {invoices.map(inv => (
               <li
