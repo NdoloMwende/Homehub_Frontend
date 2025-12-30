@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { getTenantInvoices } from "@/services/payment.service";
 import {type RentInvoice } from "@/types/rentinvoice";
 import MetricCard from "@/components/common/MetricCard";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import StatusBadge from "@/components/common/StatusBadge";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
+import ErrorMessage from "@/components/common/ErrorMessage";
 
 const TenantPayments = () => {
   const { user } = useAuth();
@@ -16,23 +17,27 @@ const TenantPayments = () => {
 
   const [invoices, setInvoices] = useState<RentInvoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-  if (!tenantId) {
-    setLoading(false);
-    return;
-  }
 
   const fetchInvoices = async () => {
+    if (!tenantId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await getTenantInvoices(tenantId);
       setInvoices(data);
+      setError(null);
     } catch (err) {
       console.error("Failed to load invoices", err);
+      setError("Failed to load payments. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
+  useEffect(() => {
 
   fetchInvoices();
 }, [tenantId]);

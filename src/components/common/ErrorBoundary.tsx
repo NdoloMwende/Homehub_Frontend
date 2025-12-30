@@ -16,14 +16,19 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
-  render() {
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error("ErrorBoundary caught an error", error, info);
+  }
+
+ render() {
     if (this.state.hasError) {
       return (
-        this.props.fallback || (
-          <div className="p-6 text-center">
-            <p className="text-red-600">Something went wrong. Please try again.</p>
-          </div>
-        )
+        <div className="p-6 text-center">
+          <p className="text-red-600">An unexpected error occurred.</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Please refresh the page or try again later.
+          </p>
+        </div>
       );
     }
 

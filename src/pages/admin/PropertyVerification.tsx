@@ -4,13 +4,15 @@ import {
   approveProperty,
   rejectProperty
 } from "@/services/admin.service";
-import {  type PendingProperty } from "@/services/admin.service";
+import { type PendingProperty } from "@/services/admin.service";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
+import ErrorMessage from "@/components/common/ErrorMessage";
 
 const PropertyVerification = () => {
   const [properties, setProperties] = useState<PendingProperty[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<PendingProperty | null>(null);
   const [rejectionComment, setRejectionComment] = useState("");
 
@@ -18,8 +20,10 @@ const PropertyVerification = () => {
     try {
       const data = await getPendingProperties();
       setProperties(data);
+      setError(null);
     } catch (err) {
       console.error("Failed to load pending properties", err);
+      setError("Failed to load verification queue.");
     } finally {
       setLoading(false);
     }
@@ -46,6 +50,11 @@ const PropertyVerification = () => {
   if (loading) {
     return <LoadingSpinner message="Loading pending properties..." />;
   }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchProperties} />;
+  }
+
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-semibold">Property Verification</h1>

@@ -6,7 +6,7 @@ import { getActiveLeaseForTenant } from "@/services/lease.service";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import { useAuth } from "@/context/AuthContext";
-
+import ErrorMessage from "@/components/common/ErrorMessage";
 // const TENANT_ID = 3; // mock logged-in tenant
 
 const TenantDashboard = () => {
@@ -17,32 +17,41 @@ const TenantDashboard = () => {
   const [maintenance, setMaintenance] = useState<any[]>([]);
   const [lease, setLease] = useState<any | null>(null);
   const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!tenantId) {
       setLoading(false);
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const [invoiceRes, maintRes, leaseRes] = await Promise.all([
-          api.get(`/rentinvoices?tenant_id=${tenantId}`),
-          getTenantMaintenanceRequests(tenantId),
-          getActiveLeaseForTenant(tenantId),
-        ]);
+    try {
+      const [invoiceRes, maintRes, leaseRes] = await Promise.all([
+        api.get(`/rentinvoices?tenant_id=${tenantId}`),
+        getTenantMaintenanceRequests(tenantId),
+        getActiveLeaseForTenant(tenantId),
+      ]);
 
-        setInvoices(invoiceRes.data);
-        setMaintenance(maintRes);
-        setLease(leaseRes);
-      } catch (err) {
-        console.error("Failed to load tenant dashboard data", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-      fetchData();
+      setInvoices(invoiceRes.data);
+      setMaintenance(maintRes);
+      setLease(leaseRes);
+      setError(null); // clear any previous error
+    } catch (err) {
+      console.error("Failed to load tenant dashboard data", err);
+      setError("Failed to load dashboard data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [tenantId]);
+  
+ useEffect(() => {
+    fetchData();
+  }, [tenantId]);
+
 
   // Invoice calculations
   const totalInvoiced = invoices.reduce(
@@ -83,6 +92,9 @@ const TenantDashboard = () => {
   if (loading) {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
+  if (error) {
+  return <ErrorMessage message={error} onRetry={fetchData} />;
+}
 
   if (invoices.length === 0 && maintenance.length === 0 && !lease) {
     return (

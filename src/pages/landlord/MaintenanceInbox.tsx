@@ -6,6 +6,7 @@ import {
 import { type MaintenanceRequest } from "@/types/maintenance";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
+import ErrorMessage from "@/components/common/ErrorMessage";
 import { useAuth } from "@/context/AuthContext";
 
 const MaintenanceInbox = () => {
@@ -14,20 +15,29 @@ const MaintenanceInbox = () => {
 
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const fetchRequests = async () => {
-    if (!landlordId) return;
+    if (!landlordId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await getMaintenanceByLandlord(landlordId);
       setRequests(data);
+      setError(null);
     } catch (err) {
       console.error("Failed to fetch requests", err);
+      setError("Failed to load maintenance inbox.");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRequests().finally(() => setLoading(false));
+    fetchRequests();
   }, [refreshTrigger, landlordId]);
 
   const handleStatusChange = async (
@@ -48,6 +58,10 @@ const MaintenanceInbox = () => {
 
   if (loading) {
     return <LoadingSpinner message="Loading maintenance inbox..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchRequests} />;
   }
 
   return (

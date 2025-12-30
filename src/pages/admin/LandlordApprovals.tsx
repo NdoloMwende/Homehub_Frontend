@@ -7,10 +7,12 @@ import {
 import { type PendingLandlord } from "@/services/admin.service";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
+import ErrorMessage from "@/components/common/ErrorMessage";
 
 const LandlordApprovals = () => {
   const [landlords, setLandlords] = useState<PendingLandlord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<PendingLandlord | null>(null);
   const [rejectionComment, setRejectionComment] = useState("");
 
@@ -18,8 +20,10 @@ const LandlordApprovals = () => {
     try {
       const data = await getPendingLandlords();
       setLandlords(data);
+      setError(null);
     } catch (err) {
       console.error("Failed to load pending landlords", err);
+      setError("Failed to load approvals queue.");
     } finally {
       setLoading(false);
     }
@@ -43,8 +47,12 @@ const LandlordApprovals = () => {
     setRejectionComment("");
   };
 
- if (loading) {
+  if (loading) {
     return <LoadingSpinner message="Loading pending landlords..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchLandlords} />;
   }
 
   return (

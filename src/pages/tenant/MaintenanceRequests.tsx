@@ -6,26 +6,40 @@ import {
 import { type MaintenanceRequest } from "@/types/maintenance";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
+import ErrorMessage from "@/components/common/ErrorMessage";
 import { useAuth } from "@/context/AuthContext";
 
 const MaintenanceRequests = () => {
   const { user } = useAuth();
   const tenantId = user?.id;
-  const unitId = 1; // Temporary — will be dynamic when units are assigned to tenants
+  const unitId = 1; // temporary — will be dynamic later
 
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const fetchRequests = async () => {
-    if (!tenantId) return;
-    const data = await getTenantMaintenanceRequests(tenantId);
-    setRequests(data);
+    if (!tenantId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const data = await getTenantMaintenanceRequests(tenantId);
+      setRequests(data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to load requests", err);
+      setError("Failed to load maintenance requests.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchRequests().finally(() => setLoading(false));
+    fetchRequests();
   }, [tenantId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,17 +50,21 @@ const MaintenanceRequests = () => {
       return;
     }
 
-    await createMaintenanceRequest({
-      tenant_id: tenantId,
-      unit_id: unitId,
-      title,
-      description,
-      status: "pending"
-    });
+    try {
+      await createMaintenanceRequest({
+        tenant_id: tenantId,
+        unit_id: unitId,
+        title,
+        description,
+        status: "pending"
+      });
 
-    setTitle("");
-    setDescription("");
-    fetchRequests();
+      setTitle("");
+      setDescription("");
+      fetchRequests();
+    } catch (err) {
+      alert("Failed to submit request. Please try again.");
+    }
   };
 
   if (!user) {
@@ -55,6 +73,10 @@ const MaintenanceRequests = () => {
 
   if (loading) {
     return <LoadingSpinner message="Loading maintenance requests..." />;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={fetchRequests} />;
   }
 
   return (

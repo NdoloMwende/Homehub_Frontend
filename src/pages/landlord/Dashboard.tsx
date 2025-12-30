@@ -4,6 +4,7 @@ import MetricCard from "@/components/common/MetricCard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import { useAuth } from "@/context/AuthContext";
+import ErrorMessage from "@/components/common/ErrorMessage";
 
 const LandlordDashboard = () => {
   const { user } = useAuth();
@@ -13,14 +14,16 @@ const LandlordDashboard = () => {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [maintenance, setMaintenance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!landlordId) {
-      setLoading(false);
-      return;
-    }
+
 
     const fetchData = async () => {
+      if (!landlordId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const [propRes, unitRes, invRes, maintRes] = await Promise.all([
           api.get(`/properties?landlord_id=${landlordId}`),
@@ -35,14 +38,16 @@ const LandlordDashboard = () => {
         setMaintenance(maintRes.data);
       } catch (err) {
         console.error("Failed to load landlord data", err);
+        setError("Failed to load dashboard data. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-
+    useEffect(() => {
     fetchData();
   }, [landlordId]);
 
+  
   if (!user) {
     return <p>Please log in to view your dashboard.</p>;
   }
