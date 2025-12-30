@@ -8,13 +8,18 @@ import { type PendingLandlord } from "@/services/admin.service";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
+import { useAuth } from "@/context/AuthContext";
 
 const LandlordApprovals = () => {
+  const { user } = useAuth();
+  const adminName = user?.full_name || "Admin";
+
   const [landlords, setLandlords] = useState<PendingLandlord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<PendingLandlord | null>(null);
   const [rejectionComment, setRejectionComment] = useState("");
+  const [approvalComment, setApprovalComment] = useState("");
 
   const fetchLandlords = async () => {
     try {
@@ -34,9 +39,10 @@ const LandlordApprovals = () => {
   }, []);
 
   const handleApprove = async (id: number) => {
-    await approveLandlord(id);
+    await approveLandlord(id, adminName, approvalComment);
     fetchLandlords();
     setSelected(null);
+    setApprovalComment("");
   };
 
   const handleReject = async (id: number) => {
@@ -122,6 +128,18 @@ const LandlordApprovals = () => {
               )}
             </div>
 
+            {/* Approval Comment (optional) */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Approval Comment (optional)</label>
+              <textarea
+                placeholder="Leave empty for default approval message"
+                value={approvalComment}
+                onChange={(e) => setApprovalComment(e.target.value)}
+                className="border p-2 w-full rounded"
+                rows={3}
+              />
+            </div>
+
             <div className="flex gap-4">
               <button
                 onClick={() => handleApprove(selected.id)}
@@ -134,7 +152,7 @@ const LandlordApprovals = () => {
                 <input
                   placeholder="Reason for rejection (required)"
                   value={rejectionComment}
-                  onChange={e => setRejectionComment(e.target.value)}
+                  onChange={(e) => setRejectionComment(e.target.value)}
                   className="border p-2 w-full"
                 />
                 <button

@@ -8,13 +8,18 @@ import { type PendingProperty } from "@/services/admin.service";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
+import { useAuth } from "@/context/AuthContext";
 
 const PropertyVerification = () => {
+  const { user } = useAuth();
+  const adminName = user?.full_name || "Admin";
+
   const [properties, setProperties] = useState<PendingProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<PendingProperty | null>(null);
   const [rejectionComment, setRejectionComment] = useState("");
+  const [approvalComment, setApprovalComment] = useState("");
 
   const fetchProperties = async () => {
     try {
@@ -33,11 +38,12 @@ const PropertyVerification = () => {
     fetchProperties();
   }, []);
 
-  const handleApprove = async (id: number) => {
-    await approveProperty(id);
-    fetchProperties();
-    setSelected(null);
-  };
+  const handleApprove = async (id: number) => {  
+  await approveProperty(id, adminName, approvalComment);
+  fetchProperties();
+  setSelected(null);
+  setApprovalComment("");
+};
 
   const handleReject = async (id: number) => {
     if (!rejectionComment.trim()) return;
@@ -108,6 +114,17 @@ const PropertyVerification = () => {
                 <p>No ownership evidence submitted</p>
               )}
             </div>
+
+            <div className="space-y-2">
+  <label className="text-sm font-medium">Approval Comment (optional)</label>
+  <textarea
+    placeholder="Leave empty for default approval message"
+    value={approvalComment}
+    onChange={(e) => setApprovalComment(e.target.value)}
+    className="border p-2 w-full rounded"
+    rows={3}
+  />
+</div>
 
             <div className="flex gap-4">
               <button

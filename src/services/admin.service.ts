@@ -14,7 +14,6 @@ export const getPendingLandlords = async (): Promise<PendingLandlord[]> => {
   const res = await api.get("/users?role=landlord&status=pending");
   const landlords = res.data;
 
-  // Enrich with property evidence (first property only for MVP)
   const enriched = await Promise.all(
     landlords.map(async (landlord: any) => {
       const propRes = await api.get(`/properties?landlord_id=${landlord.id}&_limit=1`);
@@ -32,10 +31,29 @@ export const getPendingLandlords = async (): Promise<PendingLandlord[]> => {
   return enriched;
 };
 
-export const approveLandlord = async (id: number, comment?: string) => {
+const generateApprovalComment = (entityName: string, adminName: string) => {
+  const date = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return `${entityName} has been approved by ${adminName} on ${date}.`;
+};
+
+export const approveLandlord = async (
+  id: number,
+  adminName: string,
+  customComment?: string
+) => {
+  // Fetch landlord name for default comment
+  const landlordRes = await api.get(`/users/${id}`);
+  const landlordName = landlordRes.data.full_name;
+
+  const comment = customComment?.trim() || generateApprovalComment(landlordName, adminName);
+
   return api.patch(`/users/${id}`, { 
     status: "approved", 
-    comment: comment || null 
+    comment 
   });
 };
 
@@ -46,7 +64,6 @@ export const rejectLandlord = async (id: number, comment: string) => {
   });
 };
 
-// Property verification methods
 export interface PendingProperty {
   id: number;
   name: string;
@@ -60,7 +77,6 @@ export const getPendingProperties = async (): Promise<PendingProperty[]> => {
   const res = await api.get("/properties?status=pending");
   const properties = res.data;
 
-  
   const enriched = await Promise.all(
     properties.map(async (prop: any) => {
       const landlordRes = await api.get(`/users/${prop.landlord_id}`);
@@ -74,10 +90,20 @@ export const getPendingProperties = async (): Promise<PendingProperty[]> => {
   return enriched;
 };
 
-export const approveProperty = async (id: number, comment?: string) => {
+export const approveProperty = async (
+  id: number,
+  adminName: string,
+  customComment?: string
+) => {
+  // Fetch property name for default comment
+  const propertyRes = await api.get(`/properties/${id}`);
+  const propertyName = propertyRes.data.name;
+
+  const comment = customComment?.trim() || generateApprovalComment(propertyName, adminName);
+
   return api.patch(`/properties/${id}`, { 
     status: "approved", 
-    comment: comment || null 
+    comment 
   });
 };
 
