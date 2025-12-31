@@ -5,7 +5,9 @@ export interface Lease {
   start_date: string;
   end_date: string;
   monthly_rent: number;
+  deposit: number;
   status: "active" | "expired";
+  document_url: string;
   created_at: string;
   updated_at: string;
 }
