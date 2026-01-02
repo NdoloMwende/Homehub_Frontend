@@ -8,6 +8,8 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import { useAuth } from "@/context/AuthContext";
+import { createNotification } from "@/services/notification.service";
+import api from "@/services/api";
 
 const MaintenanceInbox = () => {
   const { user } = useAuth();
@@ -50,6 +52,15 @@ const MaintenanceInbox = () => {
     } catch (err) {
       console.error("Failed to update status", err);
     }
+    // Notify tenant about status change
+    const requestRes = await api.get(`/maintenance_requests/${id}`);
+if (requestRes.data.tenant_id) {
+  const statusText = status === "in-progress" ? "in progress" : "completed";
+  await createNotification(
+    requestRes.data.tenant_id,
+    `Your maintenance request "${requestRes.data.title}" has been marked as ${statusText}`
+  );
+}
   };
 
   if (!user) {
