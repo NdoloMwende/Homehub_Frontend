@@ -9,6 +9,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import { useAuth } from "@/context/AuthContext";
+import { createNotification } from "@/services/notification.service";
 
 const LandlordApprovals = () => {
   const { user } = useAuth();
@@ -38,19 +39,40 @@ const LandlordApprovals = () => {
     fetchLandlords();
   }, []);
 
-  const handleApprove = async (id: number) => {
-    await approveLandlord(id, adminName, approvalComment);
-    fetchLandlords();
-    setSelected(null);
-    setApprovalComment("");
+  const handleApprove = async () => {
+    if (!selected) return;
+
+    try {
+      await approveLandlord(selected.id, adminName, approvalComment);
+      await createNotification(
+        selected.id,
+        `Your landlord account has been approved${approvalComment.trim() ? `: ${approvalComment}` : "."}`
+      );
+      fetchLandlords();
+      setSelected(null);
+      setApprovalComment("");
+    } catch (err) {
+      console.error("Approve failed", err);
+      setError("Failed to approve landlord.");
+    }
   };
 
-  const handleReject = async (id: number) => {
-    if (!rejectionComment.trim()) return;
-    await rejectLandlord(id, rejectionComment);
-    fetchLandlords();
-    setSelected(null);
-    setRejectionComment("");
+  const handleReject = async () => {
+    if (!selected || !rejectionComment.trim()) return;
+
+    try {
+      await rejectLandlord(selected.id, rejectionComment);
+      await createNotification(
+        selected.id,
+        `Your landlord account has been rejected: ${rejectionComment}`
+      );
+      fetchLandlords();
+      setSelected(null);
+      setRejectionComment("");
+    } catch (err) {
+      console.error("Reject failed", err);
+      setError("Failed to reject landlord.");
+    }
   };
 
   if (loading) {
@@ -142,7 +164,7 @@ const LandlordApprovals = () => {
 
             <div className="flex gap-4">
               <button
-                onClick={() => handleApprove(selected.id)}
+                onClick={handleApprove}
                 className="border px-4 py-2 bg-green-100 hover:bg-green-200"
               >
                 Approve
@@ -156,7 +178,7 @@ const LandlordApprovals = () => {
                   className="border p-2 w-full"
                 />
                 <button
-                  onClick={() => handleReject(selected.id)}
+                  onClick={handleReject}
                   disabled={!rejectionComment.trim()}
                   className="border px-4 py-2 bg-red-100 hover:bg-red-200 disabled:opacity-50"
                 >
@@ -169,6 +191,7 @@ const LandlordApprovals = () => {
               onClick={() => {
                 setSelected(null);
                 setRejectionComment("");
+                setApprovalComment("");
               }}
               className="text-sm underline"
             >
