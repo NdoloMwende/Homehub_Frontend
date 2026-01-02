@@ -13,3 +13,17 @@ export const getUserNotifications = async (
 export const markNotificationRead = async (id: number) => {
   return api.patch(`/notifications/${id}`, { is_read: true });
 };
+
+export const createNotification = async (
+  recipientId: number,
+  message: string,
+  senderId?: number
+) => {
+  return api.post("/notifications", {
+    recipient_user_id: recipientId,
+    user_id: senderId || null,
+    message,
+    is_read: false,
+    created_at: new Date().toISOString(),
+  });
+};

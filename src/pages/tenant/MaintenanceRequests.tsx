@@ -8,6 +8,8 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorMessage from "@/components/common/ErrorMessage";
 import { useAuth } from "@/context/AuthContext";
+import { createNotification } from "@/services/notification.service";
+import api from "@/services/api";
 
 const MaintenanceRequests = () => {
   const { user } = useAuth();
@@ -51,6 +53,7 @@ const MaintenanceRequests = () => {
     }
 
     try {
+      // Create the request
       await createMaintenanceRequest({
         tenant_id: tenantId,
         unit_id: unitId,
@@ -59,10 +62,27 @@ const MaintenanceRequests = () => {
         status: "pending"
       });
 
+      // Resolve landlord_id via unit - property - landlord
+      const unitRes = await api.get(`/units/${unitId}`);
+      const propertyId = unitRes.data.property_id;
+      const propertyRes = await api.get(`/properties/${propertyId}`);
+      const landlordId = propertyRes.data.landlord_id;
+
+      if (landlordId) {
+  await createNotification(
+    landlordId,
+    `New maintenance request from tenant in unit ${unitId}: "${title}"`,
+    tenantId 
+  );
+}
+
+      // Refetch list to show new request
+      await fetchRequests();
+
       setTitle("");
       setDescription("");
-      fetchRequests();
     } catch (err) {
+      console.error("Failed to submit request", err);
       alert("Failed to submit request. Please try again.");
     }
   };
