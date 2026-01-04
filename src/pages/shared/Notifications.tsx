@@ -4,34 +4,47 @@ import {
   markNotificationRead
 } from "@/services/notification.service";
 import { type Notification } from "@/types/notification";
-
-const MOCK_USER_ID = 3; // temporary — will be replaced with real auth context
+import { useAuth } from "@/context/AuthContext";
 
 const Notifications = () => {
+  const { user } = useAuth();
+
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchNotifications = async () => {
-    try {
-      const data = await getUserNotifications(MOCK_USER_ID);
-      setNotifications(data);
-    } catch (err) {
-      console.error("Failed to load notifications", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    if (!user) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const data = await getUserNotifications(user.id);
+        setNotifications(data);
+      } catch (err) {
+        console.error("Failed to load notifications", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchNotifications();
-  }, []);
+  }, [user]);
 
   const handleMarkRead = async (id: number) => {
     await markNotificationRead(id);
-    fetchNotifications();
+
+    if (!user) return;
+
+    const updated = await getUserNotifications(user.id);
+    setNotifications(updated);
   };
 
-  if (loading) return <p>Loading notifications...</p>;
+  if (!user) {
+    return <p>Please log in to view notifications.</p>;
+  }
+
+  if (loading) {
+    return <p>Loading notifications...</p>;
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -51,6 +64,7 @@ const Notifications = () => {
               <p className={notif.is_read ? "" : "font-medium"}>
                 {notif.message}
               </p>
+
               <p className="text-sm text-gray-500">
                 {new Date(notif.created_at).toLocaleString()}
               </p>

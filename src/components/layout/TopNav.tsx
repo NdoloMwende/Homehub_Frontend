@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import api from "@/services/api";
@@ -6,10 +6,14 @@ import api from "@/services/api";
 const TopNav = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();  // ← for active state
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
 
     const fetchUnread = async () => {
       try {
@@ -23,7 +27,6 @@ const TopNav = () => {
     };
 
     fetchUnread();
-    // Optional: poll every 30s — remove if not needed
     const interval = setInterval(fetchUnread, 30000);
     return () => clearInterval(interval);
   }, [user]);
@@ -33,7 +36,9 @@ const TopNav = () => {
     navigate("/login");
   };
 
-  // Public nav (no user)
+  const isActive = (path: string) => location.pathname.startsWith(path);
+
+  // Public nav
   if (!user) {
     return (
       <header className="w-full border-b bg-background">
@@ -42,19 +47,28 @@ const TopNav = () => {
             HomeHub
           </Link>
 
-          <nav className="flex items-center gap-4 text-sm">
-            <Link to="/" className="hover:underline">
+          <nav className="flex items-center gap-6 text-sm">
+            <Link
+              to="/"
+              className={isActive("/") ? "font-medium" : "hover:underline"}
+            >
               Home
             </Link>
-            <Link to="/demo" className="hover:underline">
+            <Link
+              to="/demo"
+              className={isActive("/demo") ? "font-medium" : "hover:underline"}
+            >
               Demo
             </Link>
-            <Link to="/contact" className="hover:underline">
+            <Link
+              to="/contact"
+              className={isActive("/contact") ? "font-medium" : "hover:underline"}
+            >
               Contact
             </Link>
             <Link
               to="/login"
-              className="rounded-md border px-3 py-1 hover:bg-muted"
+              className="rounded-md border px-4 py-2 hover:bg-muted transition"
             >
               Login
             </Link>
@@ -65,6 +79,13 @@ const TopNav = () => {
   }
 
   // Authenticated nav
+  const dashboardPath =
+    user.role === "admin"
+      ? "/admin"
+      : user.role === "landlord"
+      ? "/landlord"
+      : "/tenant";
+
   return (
     <header className="w-full border-b bg-background">
       <div className="flex items-center justify-between px-6 py-3">
@@ -72,43 +93,37 @@ const TopNav = () => {
           HomeHub
         </Link>
 
-        <nav className="flex items-center gap-6 text-sm">
-          {/* Role-specific dashboard link */}
+        <nav className="flex items-center gap-8 text-sm">
           <Link
-            to={
-              user.role === "admin"
-                ? "/admin/dashboard"
-                : user.role === "landlord"
-                ? "/landlord/dashboard"
-                : "/tenant/dashboard"
+            to={dashboardPath + "/dashboard"}
+            className={
+              isActive(dashboardPath) ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground transition"
             }
-            className="hover:underline"
           >
             Dashboard
           </Link>
 
-          {/* Notifications bell */}
           <button
             onClick={() => navigate("/notifications")}
-            className="relative hover:underline"
+            className="relative text-muted-foreground hover:text-foreground transition"
           >
-            Notifications
+            <span className={isActive("/notifications") ? "font-medium" : ""}>
+              Notifications
+            </span>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-3 rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">
-                {unreadCount}
+              <span className="absolute -top-2 -right-5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </button>
 
-          {/* Role label */}
-          <span className="capitalize text-muted-foreground">
+          <span className="text-muted-foreground capitalize">
             {user.role}
           </span>
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="rounded-md border px-3 py-1 hover:bg-muted"
+            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-muted transition"
           >
             Logout
           </button>

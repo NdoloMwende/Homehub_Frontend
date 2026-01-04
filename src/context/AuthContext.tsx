@@ -9,6 +9,7 @@ export interface AuthUser {
   full_name: string;
   role: UserRole;
   approved?: boolean;
+  status?: "pending" | "approved" | "rejected";
 }
 
 interface AuthContextType {
