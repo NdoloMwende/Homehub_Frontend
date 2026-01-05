@@ -201,7 +201,7 @@
       "unit_id": 1,
       "title": "Broken toilet handle",
       "description": "The flushing handle for the master bedroom tolet is broken",
-      "status": "pending"
+      "status": "in-progress"
     },
     {
       "id": "959e",
@@ -218,6 +218,14 @@
       "title": "Bad Paint Work",
       "description": "The paint work recently don in the cabinets is peeling of its ugly and poises a  poisoning risk as it's in the kitchen",
       "status": "in-progress"
+    },
+    {
+      "id": "6391",
+      "tenant_id": "4",
+      "unit_id": 1,
+      "title": "Broken Door Handle",
+      "description": "My front door handle is broken ",
+      "status": "pending"
     }
   ],
   "notifications": [
@@ -259,6 +267,22 @@
       "message": "Your landlord account has been approved: Every details is correct an compliant with our terms of service.",
       "is_read": true,
       "created_at": "2026-01-02T14:16:28.079Z"
+    },
+    {
+      "id": "e830",
+      "recipient_user_id": 4,
+      "user_id": null,
+      "message": "Your maintenance request \"Broken toilet handle\" has been marked as in progress",
+      "is_read": true,
+      "created_at": "2026-01-05T15:32:35.217Z"
+    },
+    {
+      "id": "37f4",
+      "recipient_user_id": 2,
+      "user_id": "4",
+      "message": "New maintenance request from tenant in unit 1: \"Broken Door Handle\"",
+      "is_read": false,
+      "created_at": "2026-01-05T15:35:53.193Z"
     }
   ]
 }

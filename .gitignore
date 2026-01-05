@@ -74,7 +74,5 @@ mock/*.log
 
 *.swp
 *.swo
-package-lock.json
-package-lock.json
-package.json
+
 
