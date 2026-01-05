@@ -1,0 +1,264 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "full_name": "System Admin",
+      "email": "admin@homehub.test",
+      "password_hash": "hashed",
+      "role": "admin",
+      "phone": "0700000000",
+      "profile_image_url": null,
+      "is_active": true,
+      "status": "approved",
+      "comment": null,
+      "national_id": "A1234567",
+      "kra_pin": null,
+      "evidence_of_identity": "cloudinary/admin-id.pdf",
+      "created_at": "2025-01-01T10:00:00Z",
+      "updated_at": "2025-01-01T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "full_name": "John Landlord",
+      "email": "landlord@homehub.test",
+      "password_hash": "hashed",
+      "role": "landlord",
+      "phone": "0711111111",
+      "profile_image_url": null,
+      "is_active": true,
+      "status": "approved",
+      "show_welcome": false,
+      "comment": "John Landlord has been approved by System Admin on 31 December 2025.",
+      "national_id": "L9876543",
+      "kra_pin": "A123456789P",
+      "evidence_of_identity": "cloudinary/landlord-id.pdf",
+      "created_at": "2025-01-02T10:00:00Z",
+      "updated_at": "2025-01-02T10:00:00Z"
+    },
+    {
+      "id": "3",
+      "full_name": "wick Landlord",
+      "email": "ll@homehub.test",
+      "password_hash": "hashed",
+      "role": "landlord",
+      "phone": "0711111111",
+      "profile_image_url": null,
+      "is_active": true,
+      "status": "approved",
+      "show_welcome": false,
+      "comment": "Every details is correct an compliant with our terms of service.",
+      "national_id": "L9876543",
+      "kra_pin": "A123456789P",
+      "evidence_of_identity": "cloudinary/landlord-id.pdf",
+      "created_at": "2025-01-02T10:00:00Z",
+      "updated_at": "2025-01-02T10:00:00Z"
+    },
+    {
+      "id": "4",
+      "full_name": "Jane Ndolo",
+      "email": "tenant@homehub.test",
+      "password_hash": "hashed",
+      "role": "tenant",
+      "phone": "0722222222",
+      "profile_image_url": null,
+      "is_active": true,
+      "status": "active",
+      "comment": null,
+      "national_id": "T4567890",
+      "kra_pin": null,
+      "evidence_of_identity": null,
+      "created_at": "2025-01-03T10:00:00Z",
+      "updated_at": "2025-01-03T10:00:00Z"
+    }
+  ],
+  "properties": [
+    {
+      "id": "1",
+      "landlord_id": 2,
+      "name": "Emerald Residency",
+      "address": "123 Ngong Road",
+      "city": "Nairobi",
+      "country": "Kenya",
+      "description": "Luxury apartments",
+      "image_url": "cloudinary/property.jpg",
+      "status": "approved",
+      "comment": "Emerald Residency has been approved by System Admin on 30 December 2025.",
+      "evidence_of_ownership": "cloudinary/title-deed.pdf",
+      "lrn_no": "LR12345",
+      "location": "Ngong Road",
+      "created_at": "2025-01-04T10:00:00Z",
+      "updated_at": "2025-01-04T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "landlord_id": 2,
+      "name": "Golden View Apartments",
+      "address": "123 Kilimani Road",
+      "city": "Nairobi",
+      "country": "Kenya",
+      "description": "Luxury apartments",
+      "image_url": "cloudinary/property.jpg",
+      "status": "pending",
+      "comment": "Location is not accurate neither is it correct",
+      "evidence_of_ownership": "cloudinary/title-deed.pdf",
+      "lrn_no": "LR123456",
+      "location": "Kilimani Road",
+      "created_at": "2025-01-04T10:00:00Z",
+      "updated_at": "2025-01-04T10:00:00Z"
+    }
+  ],
+  "units": [
+    {
+      "id": "1",
+      "property_id": 1,
+      "unit_number": "A1",
+      "floor_number": "1",
+      "rent_amount": 45000,
+      "status": "occupied",
+      "created_at": "2025-01-05T10:00:00Z",
+      "updated_at": "2025-01-05T10:00:00Z"
+    }
+  ],
+  "leases": [
+    {
+      "id": "1",
+      "unit_id": 1,
+      "tenant_id": 4,
+      "start_date": "2025-01-01",
+      "end_date": "2025-12-31",
+      "monthly_rent": 45000,
+      "deposit": 90000,
+      "status": "active",
+      "document_url": "https://res.cloudinary.com/demo/sample.pdf",
+      "created_at": "2025-01-06T10:00:00Z",
+      "updated_at": "2025-01-06T10:00:00Z"
+    }
+  ],
+  "rentinvoices": [
+    {
+      "id": "1",
+      "unit_id": 1,
+      "landlord_id": 2,
+      "tenant_id": 4,
+      "lease_id": 1,
+      "invoice_date": "2025-02-01",
+      "invoice_amount": 45000,
+      "status": "paid",
+      "paid_date": "2025-02-05",
+      "payment_id": 1,
+      "created_at": "2025-02-01T10:00:00Z",
+      "updated_at": "2025-02-05T10:00:00Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": "1",
+      "lease_id": 1,
+      "invoice_id": 1,
+      "amount": 45000,
+      "due_date": "2025-02-05",
+      "paid_date": "2025-02-05",
+      "payment_reference": "MPESA123456",
+      "status": "paid",
+      "payment_method": "mpesa",
+      "created_at": "2025-02-05T10:00:00Z",
+      "updated_at": "2025-02-05T10:00:00Z"
+    }
+  ],
+  "maintenance_requests": [
+    {
+      "id": "1",
+      "unit_id": 1,
+      "tenant_id": 4,
+      "landlord_id": 2,
+      "title": "Leaking sink",
+      "description": "Water leaking under sink",
+      "image_url": "cloudinary/leak.jpg",
+      "status": "completed",
+      "created_at": "2025-02-10T10:00:00Z",
+      "updated_at": "2025-02-11T10:00:00Z"
+    },
+    {
+      "id": "ab28",
+      "tenant_id": 4,
+      "landlord_id": 2,
+      "unit_id": 1,
+      "title": "Cracked Sink Top",
+      "description": "The sink top is cracked like under it so its leaking and also the sink itself is slanted .Im afraid my things will fall of.",
+      "status": "in-progress"
+    },
+    {
+      "id": "a565",
+      "tenant_id": 4,
+      "unit_id": 1,
+      "title": "Sinking Ceiling",
+      "description": "The ceiling in my store room is leaking and its sunk it looks like its going to fall any time soon",
+      "status": "in-progress"
+    },
+    {
+      "id": "3372",
+      "tenant_id": 4,
+      "unit_id": 1,
+      "title": "Broken toilet handle",
+      "description": "The flushing handle for the master bedroom tolet is broken",
+      "status": "pending"
+    },
+    {
+      "id": "959e",
+      "tenant_id": "4",
+      "unit_id": 1,
+      "title": "Brocken socket",
+      "description": "Kitchen socket is brocken",
+      "status": "pending"
+    },
+    {
+      "id": "99a7",
+      "tenant_id": "4",
+      "unit_id": 1,
+      "title": "Bad Paint Work",
+      "description": "The paint work recently don in the cabinets is peeling of its ugly and poises a  poisoning risk as it's in the kitchen",
+      "status": "in-progress"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "1",
+      "user_id": 2,
+      "recipient_user_id": 4,
+      "message": "Your maintenance request is being handled",
+      "is_read": false,
+      "created_at": "2025-02-11T10:00:00Z"
+    },
+    {
+      "id": "5e10",
+      "recipient_user_id": 2,
+      "message": "New maintenance request from tenant in unit 1: \"Brocken socket\"",
+      "is_read": false,
+      "created_at": "2026-01-02T13:02:18.489Z"
+    },
+    {
+      "id": "dac7",
+      "recipient_user_id": 2,
+      "user_id": "4",
+      "message": "New maintenance request from tenant in unit 1: \"Bad Paint Work\"",
+      "is_read": false,
+      "created_at": "2026-01-02T13:21:12.794Z"
+    },
+    {
+      "id": "3d54",
+      "recipient_user_id": "4",
+      "user_id": null,
+      "message": "Your maintenance request \"Bad Paint Work\" has been marked as in progress",
+      "is_read": false,
+      "created_at": "2026-01-02T13:36:32.889Z"
+    },
+    {
+      "id": "43d2",
+      "recipient_user_id": "3",
+      "user_id": null,
+      "message": "Your landlord account has been approved: Every details is correct an compliant with our terms of service.",
+      "is_read": true,
+      "created_at": "2026-01-02T14:16:28.079Z"
+    }
+  ]
+}

@@ -80,7 +80,10 @@ const Login = () => {
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Use admin@homehub.com / admin123 to login
+          Don't have an account?{" "}
+          <a href="/register" className="text-blue-600 hover:underline">
+            Register
+          </a>
         </p>
       </div>
     </div>
